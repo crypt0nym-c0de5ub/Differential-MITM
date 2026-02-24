@@ -1,6 +1,6 @@
-# Prallel Patition
+# Parallel Partition
 > from paper [22-CC-Differential Meet-In-The-Middle Cryptanalysis](https://link.springer.com/chapter/10.1007/978-3-031-38548-3_9)
 
 
 
-<div align=center>![Parallel Partition](https://github.com/user-attachments/assets/41a6a985-4011-481a-a627-f37cd4677d02)
+<img src="https://github.com/user-attachments/assets/41a6a985-4011-481a-a627-f37cd4677d02" width = "100" height = "100" div align=right />
