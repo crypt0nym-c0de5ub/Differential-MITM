@@ -3,12 +3,13 @@
 
 
 ## Differential MITM Attack
+> from Section 2.2 of Paper [22-CC-Differential Meet-In-The-Middle Cryptanalysis](https://link.springer.com/chapter/10.1007/978-3-031-38548-3_9)
 
 ### 原理与假设
 
 $n$-bit 分组密码 $E$，有如下图的区分器与扩展：
 
-<img src="https://github.com/user-attachments/assets/93471796-555c-41da-9b9e-9fad9f48de36" width = "500" height = "300" div align=center />
+<img src="https://github.com/user-attachments/assets/93471796-555c-41da-9b9e-9fad9f48de36" width = "300" height = "500" div align=center />
 
 
 
