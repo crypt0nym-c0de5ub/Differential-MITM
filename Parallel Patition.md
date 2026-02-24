@@ -26,7 +26,7 @@ $$
 
 所以组成的 Pairs 数量为 $2^{|k_{in}|}$ 个 $(P,\widetilde{P},k_{in})$， $2^{|k_{out}|}$ 个 $(C,\widetilde{C},k_{out})$
 
-得到的 $\widetilde{P}$ 之后可以加密得到相应的密文 $\widehat{C}$, 将 $(P,(\widetilde{P},\widehat{C}),k_{in})$ 存入 Hash 表（索引为 $\widehat{C}$），在 Lower 部分同时生成 $\widetilde{C}$ 之后，寻找 $(\widehat{C},\widetilde{C})$ 相等的碰撞。找到，即为正确 Pairs。
+得到的 $\widetilde{P}$ 之后可以加密得到相应的密文 $\widehat{C}$, 将 $(P,(\widetilde{P},\widehat{C}),k_{in})$ 存入 Hash 表（索引为 $\widehat{C}$），在 Lower 部分同时生成 $\widetilde{C}$ 之后，寻找 $(\widehat{C},\widetilde{C})$ 相等的碰撞。找到，即为正确 Pairs.
 
 ### 复杂度分析
 
@@ -44,9 +44,9 @@ $$
 
 假设有概率为 $2^{-p}$ 的差分区分器，其中 $p$ 为区分器概率的负对数（$p>0$）
 
-$\bigstar$ 当分组密码的密钥加不是加在全状态上的时候（**非全状态密钥加（Non-Full Key Addition）**，典型算法有$\texttt{SKINNY, GIFT, SIMON}$，parallel partition可以用来在增加复杂度的情况下增加攻击轮数，**ONE** round。
+$\bigstar$ 当分组密码的密钥加不是加在全状态上的时候（**非全状态密钥加（Non-Full Key Addition）**，典型算法有$\texttt{SKINNY, GIFT, SIMON}$，parallel partition可以用来在增加复杂度的情况下增加攻击轮数，**ONE** round.
 
-如下图所示，在区分器末尾添加一轮，密钥只加在 $m$ bits 状态上，若 $p>m$，则以上加一轮条件可以被满足。
+如下图所示，在区分器末尾添加一轮，密钥只加在 $m$ bits 状态上，若 $p>m$，则以上加一轮条件可以被满足.
 
 <img src="https://github.com/user-attachments/assets/41a6a985-4011-481a-a627-f37cd4677d02" width = "500" height = "300" div align=center />
 
@@ -54,7 +54,7 @@ $\bigstar$ 当分组密码的密钥加不是加在全状态上的时候（**非�
 
 如上图，在攻击最后添加一轮， $X$ 和 $Y$ 分别是 Key Addition 前后的状态（其中有 $n-m$ bits 未被 Key Addition 影响）
 
-$\blacktriangleright$ 由于需要 $2^p$ 个明文来保证至少找到一个正确 pair，假设现有数据量即为 $2^p$，则在上图 $S_{r-1}$ 处即有 $2^p$ 个数据。将 $2^n$（实际是 $2^p$ 种情况） 在 $X$ 和 $Y$ 处进行划分，可化为 $2^m \times 2^{p-m}$ 两组，其中 $2^m$ 对应受密钥影响的部分；$2^{p-m}$ 对应不受密钥影响的部分，这部分同样需要多次取值（<u>但不受密钥影响，每次不同取值对应 $2^m$ 次 basic D-MITM 的操作</u>）来达到数据要求。
+$\blacktriangleright$ 由于需要 $2^p$ 个明文来保证至少找到一个正确 pair，假设现有数据量即为 $2^p$，则在上图 $S_{r-1}$ 处即有 $2^p$ 个数据。将 $2^n$（实际是 $2^p$ 种情况） 在 $X$ 和 $Y$ 处进行划分，可化为 $2^m \times 2^{p-m}$ 两组，其中 $2^m$ 对应受密钥影响的部分；$2^{p-m}$ 对应不受密钥影响的部分，这部分同样需要多次取值（<u>但不受密钥影响，每次不同取值对应 $2^m$ 次 basic D-MITM 的操作</u>）来达到数据要求.
 
 * 对每个不同取值的 $p-m$ 部分的 $X$ 和 $Y$ （复杂度 $2^{p-m}$），执行以下操作：
 
