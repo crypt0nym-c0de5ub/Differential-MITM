@@ -62,8 +62,8 @@ $\blacktriangleright$ 由于需要 $2^p$ 个明文来保证至少找到一个正
 
 * 对每个不同取值的 $p-m$ 部分的 $X$ 和 $Y$ （复杂度 $2^{p-m}$），执行以下操作：
 
-  * 对 $X$，由于有 $2^m$ 个 $P$，所以 $(P,\widetilde{P},k_{in})$ 的数量要 $\times 2^m$，即为 $2^{m+k_{in}}$ 个 Pairs.
-  * 对 $Y$，由于其是密文，可将其<u>解密至明文</u>，然后执行明文部分的部分加密操作。同上，有 $2^{m+k_{out}}$  个 Pairs.
+  * 对 $X$，由于有 $2^m$ 个 $P$，即有 $2^m$ 个 $C$ , 所以 $(C,\widetilde{C},k_{out})$ 的数量要 $\times 2^m$，即为 $2^{m+k_{out}}$ 个 Pairs.
+  * 对 $Y$，由于其是密文，可将其<u>解密至明文</u>，然后执行明文部分的部分加密操作。同上，有 $2^{m+k_{in}}$  个 Pairs.
   * 匹配 $X$ 和 $Y$，匹配后的数量为 $2^{|k_{in}|+|k_{out}|+2m}$ ，比之前多了 $2^{2m}$（没考虑密钥桥，有密钥桥时会更少）.
     * 每 $2^m$ 个 $(X,X')$ 和 $(Y,Y')$ 中只有 1 个有效配对，所以对 $(X,X')$ 和 $(Y,Y')$ 都有 $2^{-m}$ 的过滤效果. 
       * 如果 $2^m$ 部分对应密钥猜测是免费的（通常可以用 $k_{in}\cup k_{out}$ 推出来），则过滤效果为 $2^{-m}$；
@@ -75,7 +75,7 @@ $\blacktriangleright$ 由于需要 $2^p$ 个明文来保证至少找到一个正
 
 
 $$
-\mathcal{T}=2^{p-m}\times(2^{|k_{in}|+m}+2^{|k_{out}|+m})+2^{|k_{in}|+|k_{out}|-|k_{in}\cap k_{out}|+(2m-m-m)-n+p}+2^{k-n+p}
+\mathcal{T}=2^{p-m}\times(2^{|k_{in}|+m}+2^{|k_{out}|+m}+2^{|k_{in}|+|k_{out}|-|k_{in}\cap k_{out}|+(2m-m)-n+p})+2^{k-n+p}
 $$
 
 
@@ -123,10 +123,6 @@ $$
 
 
 
-
-
-<img src="https://github.com/user-attachments/assets/cac6c058-c804-423c-8010-9dd2b87fc7c1" width = "500" height = "300" div align=center />
-
 ### Truncated D-MITM
 
 
@@ -151,6 +147,12 @@ $$
 1. 对全状态密钥加 （Full Key Addition） 也可以用 Parallel Partition 扩展 1 轮；
 2. 对非全状态密钥加 （Non-Full Key Addition） 可以用 Parallel Partition 扩展 2 轮.
 
+
+
+<img src="https://github.com/user-attachments/assets/cac6c058-c804-423c-8010-9dd2b87fc7c1" width = "500" height = "300" div align=center />
+
+
+
 #### 原理与假设
 
 如上图，在攻击最后添加 1-2 轮，D-MITM 攻击末尾状态为 $A$ , 加 1-2 轮后状态为 $B$. 对 Full Key Addition 的分组密码，可在 D-MITM 攻击末尾加上一轮. 
@@ -168,6 +170,24 @@ $$
 
 有区分器概率为 $2^p<1$，扩展后，在末尾（也可以在首部）增加 1-2 轮. 固定 $Fs$ bits 数据，并标记这些位置涉及的密钥 $k_F$ .
 
+由于额外的扩展轮，但有 $Fs$ bits 数据被固定，所以在两端产生的 Paris 数量增加 $2^{|k_{in}|+\delta_{in}-|k_{in}\cap k_{out}|}\rightarrow 2^{(W-F)s}\times2^{|k_{in}|+\delta_{in}-|k_{in}\cap k_{out}|}$. 为满足至少找到 1 个正确 Pair，重复计算的次数减少 $2^{p-\delta_{in}+|k_{in}\cap k_{out}|}\rightarrow 2^{p-(W-F)s-\delta_{in}+|k_{in}\cap k_{out}|}$ .
+
+将扩展产生的额外涉及状态，以 word 为单位分为两组 $2^{W}=2^{F}\times 2^{W-F}$ , 其中 $F$ words 选为固定位置，$W-F$ words 为随机位置. 对 $2^{(W-F)s}$ 个 structures 里的每一个，进行如下操作：
+
+* 并行的，对 $A$ ，由于有 $2^{(W-F)s}$ 个 $P\rightarrow A$，所以 $(A,\widetilde{A},k_{out})$ 的数量为  $ 2^{(W-F)s}\times2^{|k_{out}|+\delta_{out}-|k_{in}\cap k_{out}|}$  个.
+* 并行的，对 $B$ ，将其解密到明文 $(P,\widetilde{P},k_{in})$ , 然后计算到 $\widehat{A}$，与上面同理, $(B,\widetilde{B},\widehat{A},k_{in})$ 的数量为 $2^{(W-F)s}\times2^{|k_{in}|+\delta_{in}-|k_{in}\cap k_{out}|}$ .
+* 匹配 $\widetilde{A}$ 与 $\widehat{A}$ ：
+  * 因为匹配时需要满足 $A\oplus B = \widetilde{A} \oplus \widetilde{B}$ 的条件，所以有 $2^{-F}$ bits 的条件可用于过滤.
+  * 若固定部分 $F$ 个 words 上涉及的密钥 $k_F$ 能够被 $k_{in}, k_{out}$ 推出，则在匹配时会产生 $$
+
 
 
 #### 复杂度分析
+
+
+$$
+\begin{aligned}
+\mathcal{T}=& 2^{p-(W-F)s-\delta_{in}+|k_{in}\cap k_{out}|}\times(2^{(W-F)s}\times2^{|k_{in}|+\delta_{in}-|k_{in}\cap k_{out}|}+\\
+& 2^{(W-F)s}\times2^{|k_{out}|+\delta_{out}-|k_{in}\cap k_{out}|}+2^{|k_{in}|+\delta_{in}+|k_{out}|+\delta_{out}+2(W-F)s-Fs-L-2|k_{in}\cap k_{out}|}).
+\end{aligned}
+$$
