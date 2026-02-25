@@ -31,6 +31,10 @@ $$
 ### 复杂度分析
 
 
+$$
+\mathcal{T}=2^p\times(2^{|k_{in}|}+2^{|k_{out}|})+2^{|k_{in}\cup k_{out}|-n+p}+2^{k-n+p}.
+$$
+
 
 
 
@@ -54,25 +58,30 @@ $\bigstar$ 当分组密码的密钥加不是加在全状态上的时候（**非�
 
 如上图，在攻击最后添加一轮， $X$ 和 $Y$ 分别是 Key Addition 前后的状态（其中有 $n-m$ bits 未被 Key Addition 影响）
 
-$\blacktriangleright$ 由于需要 $2^p$ 个明文来保证至少找到一个正确 pair，假设现有数据量即为 $2^p$，则在上图 $S_{r-1}$ 处即有 $2^p$ 个数据。将 $2^n$（实际是 $2^p$ 种情况） 在 $X$ 和 $Y$ 处进行划分，可化为 $2^m \times 2^{p-m}$ 两组，其中 $2^m$ 对应受密钥影响的部分；$2^{p-m}$ 对应不受密钥影响的部分，这部分同样需要多次取值（<u>但不受密钥影响，每次不同取值对应 $2^m$ 次 basic D-MITM 的操作</u>）来达到数据要求.
+$\blacktriangleright$ 由于需要 $2^p$ 个明文来保证至少找到一个正确 pair，假设现有数据量即为 $2^p$，则在上图 $S_{r-1}$ 处即有 $2^p$ 个数据。将 $2^n$（实际是 $2^p$ 种情况） 在 $X$ 和 $Y$ 处进行划分，可化为 $2^m \times 2^{p-m}$ 两组，其中 $2^m$ 对应受密钥影响的部分；<u>$2^{p-m}$ 对应不受密钥影响的部分</u>，这部分同样需要多次取值（<u>但不受密钥影响，每次不同取值对应 $2^m$ 次 basic D-MITM 的操作</u>）来达到数据要求.
 
 * 对每个不同取值的 $p-m$ 部分的 $X$ 和 $Y$ （复杂度 $2^{p-m}$），执行以下操作：
 
   * 对 $X$，由于有 $2^m$ 个 $P$，所以 $(P,\widetilde{P},k_{in})$ 的数量要 $\times 2^m$，即为 $2^{m+k_{in}}$ 个 Pairs.
-  * 对 $Y$，由于其是密文，可将其<u>解密至明文</u>，然后执行明文部分的部分加密操作。同上，有 $2^{m+k_{out}}$  个Pairs.
+  * 对 $Y$，由于其是密文，可将其<u>解密至明文</u>，然后执行明文部分的部分加密操作。同上，有 $2^{m+k_{out}}$  个 Pairs.
+  * 匹配 $X$ 和 $Y$，匹配后的数量为 $2^{|k_{in}|+|k_{out}|+2m}$ ，比之前多了 $2^{2m}$（没考虑密钥桥，有密钥桥时会更少）.
+    * 每 $2^m$ 个 $(X,X')$ 和 $(Y,Y')$ 中只有 1 个有效配对，所以对 $(X,X')$ 和 $(Y,Y')$ 都有 $2^{-m}$ 的过滤效果. 
+      * 如果 $2^m$ 部分对应密钥猜测是免费的（通常可以用 $k_{in}\cup k_{out}$ 推出来），则过滤效果为 $2^{-m}$；
+      * 否则若涉及 $2^{k_m}$ bits 独立于 $2^{k_{in}\cup k_{out}}$ 的密钥，则需要考虑猜测密钥的消耗，过滤效果变为 $2^{k_m}\times 2^{-m}$.
+    * 因此，匹配后的数量为 $2^{|k_{in}|+|k_{out}|+2m-m-m}=2^{|k_{in}|+|k_{out}|}$ 没变（假设 $k_{m}=0$）.
 
-* 匹配 $X$ 和 $Y$，匹配后的数量为 $2^{|k_{in}|+|k_{out}|+2m}$ ，比之前多了 $2^{2m}$（没考虑密钥桥，有密钥桥时会更少）.
 
-  * 每 $2^m$ 个 $(X,X')$ 和 $(Y,Y')$ 中只有 1 个有效配对，所以对 $(X,X')$ 和 $(Y,Y')$ 都有 $2^{-m}$ 的过滤效果. 
-  
-    * 如果 $m$ 部分的密钥猜测是免费的（通常可以用 $k_{in}\cup k_{out}$ 推出来），则过滤效果为 $2^{-m}$；
-  
-    * 否则若涉及 $2^{k_m}$ bits 独立于 $2^{k_{in}\cup k_{out}}$ 的密钥，则需要考虑猜测密钥的消耗，过滤效果变为 $2^{k_m}\times 2^{-m}$.
-  * 因此，匹配后的数量为 $2^{|k_{in}|+|k_{out}|+2m-m-m}=2^{|k_{in}|+|k_{out}|}$ 没变.
-  
-  
+### 复杂度分析
 
-## Improved Parallel Partition
+
+$$
+\mathcal{T}=2^{p-m}\times(2^{|k_{in}|+m}+2^{|k_{out}|+m})+2^{|k_{in}|+|k_{out}|-|k_{in}\cap k_{out}|+(2m-m-m)-n+p}+2^{k-n+p}
+$$
+
+
+注：为保证至少存在一个正确 Pair，最终生成的 Pairs 数量应该保持与 Basic D-MITM 攻击一致. 所以由于在 Upper 和 Lower 所产生的 Pairs 数量增加 $2^{|k_{in}|}\rightarrow 2^{|k_{in}|+m}$，所以重复的次数减少 $2^p\rightarrow 2^{p-m}$ .
+
+## Improved Parallel Partition in D-MITM
 
 > from Section 4.1 of Paper [24-EC-Improved Differential Meet-in-the-Middle Cryptanalysis](https://link.springer.com/chapter/10.1007/978-3-031-58716-0_10)\
 
@@ -117,3 +126,48 @@ $$
 
 
 <img src="https://github.com/user-attachments/assets/cac6c058-c804-423c-8010-9dd2b87fc7c1" width = "500" height = "300" div align=center />
+
+### Truncated D-MITM
+
+
+
+#### 复杂度分析
+
+$$
+\begin{aligned}
+\mathcal{T} & =2^{p-\delta_{in}}\times2^{|k_{in}\cap k_{out}|}(2^{|k_{in}|+\delta_{in}-|k_{in}\cap k_{out}|}+2^{|k_{out}|+\delta_{out}-|k_{in}\cap k_{out}|}) \\
+ & +2^{p-\delta_{in}}\times2^{|k_{in}\cap k_{out}|}(2^{|k_{in}|+\delta_{in}+|k_{out}|+\delta_{out}-2|k_{in}\cap k_{out}|-n})
+\end{aligned}
+$$
+
+
+
+### Improved Parallel Partition (more generic)
+
+**（For Truncated Differential）**
+
+两方面改进（sharing 相同的逻辑）：
+
+1. 对全状态密钥加 （Full Key Addition） 也可以用 Parallel Partition 扩展 1 轮；
+2. 对非全状态密钥加 （Non-Full Key Addition） 可以用 Parallel Partition 扩展 2 轮.
+
+#### 原理与假设
+
+如上图，在攻击最后添加 1-2 轮，D-MITM 攻击末尾状态为 $A$ , 加 1-2 轮后状态为 $B$. 对 Full Key Addition 的分组密码，可在 D-MITM 攻击末尾加上一轮. 
+
+如上图，通过固定 $A,B$ 上 $F$ 个 words，可以实现和 basic parallel partition 类似的效果:
+
+* 当固定的 $F$ 个 words 所对应的 $k_F$ 可以由 $k_{in} \cup k_{out}$ 推出，则该方法与 basic parallel partition 相同；
+* 当固定的 $F$ 个 words 所对应的 $k_F$ 不能（全部）由 $k_{in} \cup k_{out}$ 推出，则匹配后留下的 Pairs 变多，具体的下面解释.
+
+
+
+因为是截断差分，所以状态有 $W$ 个 words, 假设每个 word 的大小为 $s$ bits, 则 $n=Ws$. 若没有任何条件，则扩展 1-2 轮的代价为需要将攻击重复 $2^{Ws}$ 次，数据量为 $2^p$.（若只期望留下一个正确 Pair，则未进行扩展时需要重复攻击的次数为 1 , 且数据量为 $2^p$ ）现假设将 $W$ 中 $F$ 个 words 固定下来，则所需要重复的攻击次数缩减为 $2^{p-(W-F)s}$，数据量为 $2^p$. 或，理解为有 $2^{(W-F)s}$ 个 structure，每个 structure 包含 $2^p$ 的数据量.
+
+#### 方法与步骤
+
+有区分器概率为 $2^p<1$，扩展后，在末尾（也可以在首部）增加 1-2 轮. 固定 $Fs$ bits 数据，并标记这些位置涉及的密钥 $k_F$ .
+
+
+
+#### 复杂度分析
