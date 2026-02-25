@@ -174,7 +174,7 @@ $$
 
 将扩展产生的额外涉及状态，以 word 为单位分为两组 $2^{W}=2^{F}\times 2^{W-F}$ , 其中 $F$ words 选为固定位置，$W-F$ words 为随机位置. 对 $2^{(W-F)s}$ 个 structures 里的每一个，进行如下操作：
 
-* 并行的，对 $A$ ，由于有 $2^{(W-F)s}$ 个 $P\rightarrow A$，所以 $(A,\widetilde{A},k_{out})$ 的数量为  $ 2^{(W-F)s}\times2^{|k_{out}|+\delta_{out}-|k_{in}\cap k_{out}|}$  个.
+* 并行的，对 $A$ ，由于有 $2^{(W-F)s}$ 个 $P\rightarrow A$ ，所以 $(A,\widetilde{A},k_{out})$ 的数量为  $2^{(W-F)s}\times2^{|k_{out}|+\delta_{out}-|k_{in}\cap k_{out}|}$  个.
 * 并行的，对 $B$ ，将其解密到明文 $(P,\widetilde{P},k_{in})$ , 然后计算到 $\widehat{A}$，与上面同理, $(B,\widetilde{B},\widehat{A},k_{in})$ 的数量为 $2^{(W-F)s}\times2^{|k_{in}|+\delta_{in}-|k_{in}\cap k_{out}|}$ .
 * 匹配 $\widetilde{A}$ 与 $\widehat{A}$ ：
   * 因为匹配时需要满足 $A\oplus B = \widetilde{A} \oplus \widetilde{B}$ 的条件，所以有 $2^{-F}$ bits 的条件可用于过滤.
