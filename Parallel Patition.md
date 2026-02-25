@@ -64,18 +64,17 @@ $\blacktriangleright$ 由于需要 $2^p$ 个明文来保证至少找到一个正
 
   * 对 $X$，由于有 $2^m$ 个 $P$，即有 $2^m$ 个 $C$ , 所以 $(C,\widetilde{C},k_{out})$ 的数量要 $\times 2^m$，即为 $2^{m+k_{out}}$ 个 Pairs.
   * 对 $Y$，由于其是密文，可将其<u>解密至明文</u>，然后执行明文部分的部分加密操作。同上，有 $2^{m+k_{in}}$  个 Pairs.
-  * 匹配 $X$ 和 $Y$，匹配后的数量为 $2^{|k_{in}|+|k_{out}|+2m}$ ，比之前多了 $2^{2m}$（没考虑密钥桥，有密钥桥时会更少）.
-    * 每 $2^m$ 个 $(X,X')$ 和 $(Y,Y')$ 中只有 1 个有效配对，所以对 $(X,X')$ 和 $(Y,Y')$ 都有 $2^{-m}$ 的过滤效果. 
-      * 如果 $2^m$ 部分对应密钥猜测是免费的（通常可以用 $k_{in}\cup k_{out}$ 推出来），则过滤效果为 $2^{-m}$；
-      * 否则若涉及 $2^{k_m}$ bits 独立于 $2^{k_{in}\cup k_{out}}$ 的密钥，则需要考虑猜测密钥的消耗，过滤效果变为 $2^{k_m}\times 2^{-m}$.
-    * 因此，匹配后的数量为 $2^{|k_{in}|+|k_{out}|+2m-m-m}=2^{|k_{in}|+|k_{out}|}$ 没变（假设 $k_{m}=0$）.
+  * 匹配 $X$ 和 $Y$，匹配后的数量为 $2^{|k_{in}|+|k_{out}|+2m}$ ，比之前多了 $2^{2m}$ .
+    * 因为 $X$ 和 $Y$ 之间只有一层 Key Addition, 所以 应该满足 $(X\oplus k_m)\oplus (X'\oplus k_m)=Y\oplus Y'$ , 即 $X\oplus X' = Y\oplus Y'$ , 这对应着 $2^{-m}$ 的过滤效果. 
+    * 如果 $2^m$ 部分对应密钥猜测是（部分）免费的（通常可以用 $k_{in}\cup k_{out}$ 推出来），则又对应过滤效果 $2^{k_{in}-m}$；
+  * 因此，匹配后的数量为 $2^{|k_{in}|+|k_{out}|+2m-m-m}=2^{|k_{in}|+|k_{out}|}$ 没变（假设 $k_{m}=0$）.
 
 
 ### 复杂度分析
 
 
 $$
-\mathcal{T}=2^{p-m}\times(2^{|k_{in}|+m}+2^{|k_{out}|+m}+2^{|k_{in}|+|k_{out}|-|k_{in}\cap k_{out}|+(2m-m)-n+p})+2^{k-n+p}
+\mathcal{T}=2^{p-m}\times(2^{|k_{in}|+m}+2^{|k_{out}|+m}+2^{|k_{in}|+|k_{out}|-|k_{in}\cap k_{out}|+(2m-m+k_m-m)-n+p})+2^{k-n+p}
 $$
 
 
@@ -178,7 +177,8 @@ $$
 * 并行的，对 $B$ ，将其解密到明文 $(P,\widetilde{P},k_{in})$ , 然后计算到 $\widehat{A}$，与上面同理, $(B,\widetilde{B},\widehat{A},k_{in})$ 的数量为 $2^{(W-F)s}\times2^{|k_{in}|+\delta_{in}-|k_{in}\cap k_{out}|}$ .
 * 匹配 $\widetilde{A}$ 与 $\widehat{A}$ ：
   * 因为匹配时需要满足 $A\oplus B = \widetilde{A} \oplus \widetilde{B}$ 的条件，所以有 $2^{-F}$ bits 的条件可用于过滤.
-  * 若固定部分 $F$ 个 words 上涉及的密钥 $k_F$ 能够被 $k_{in}, k_{out}$ 推出，则在匹配时会产生 $$
+  * 若固定部分 $F$ 个 words 上涉及的密钥 $k_F$ 能够被 $k_{in}, k_{out}$ 推出，则在匹配时会产生 $2^{k_f-F}$ bits 条件用于过滤.
+  * 此外，$A,B$ 之间还可能存在 $2^L$ bits 的线性条件，==和上面一条有什么关系？==
 
 
 
